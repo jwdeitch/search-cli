@@ -47,7 +47,10 @@ func parseFlags(q string) {
 	if strings.Contains(q,"-y%3D") {
 		yearPosition := strings.Index(q,"-y%3D")
 		year := q[yearPosition+5:yearPosition+6]
-		q = q + "&dateRestrict=" + year
+		stringToRemove := q[yearPosition:yearPosition+6]
+		q = strings.Replace(q,stringToRemove,"",1)
+		q = q + "&dateRestrict=y[" + year + "]"
+		fmt.Println(q)
 	}
 }
 
