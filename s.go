@@ -18,6 +18,14 @@ var WRAUrl string = "https://2ylflv45i7.execute-api.us-west-2.amazonaws.com/prod
 
 var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB20e2VDjrUebicIJkA4MFH4WO4b8cEzQY&cx=013676722247143124300:dazj-lelyfy&num=3"
 
+type GoogleResponse struct {
+	Items struct {
+		      Link    string `json:"link"`
+		      Snippet string `json:"snippet"`
+		      Title   string `json:"title"`
+	      } `json:"items"`
+}
+
 func main() {
 
 	if (os.Getenv("TERM_PROGRAM") != "iTerm.app") {
@@ -37,16 +45,19 @@ func main() {
 
 func callGoogle(q string) {
 	resp, err := http.Get(googleUrl + "&q=" + q)
-	Check(err)
 	defer resp.Body.Close()
-	contents, err := ioutil.ReadAll(resp.Body)
+	Check(err)
+	response, _ := ioutil.ReadAll(resp.Body)
 
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
+	var responseItems []GoogleResponse
 
-	fmt.Printf("%s\n", string(contents))
+	json.Unmarshal([]byte(response), &responseItems)
+
+	fmt.Println(responseItems)
+	//for _, responseItem := range responseItems {
+	//	fmt.Println(responseItem)
+	//}
+
 }
 
 func callWRA(q string) {
