@@ -29,18 +29,39 @@ type GoogleResponse struct {
 
 func main() {
 
-	q := url.QueryEscape(strings.Join(os.Args[2:], " "))
+	if len(os.Args) > 2 {
 
-	switch (os.Args[1]) {
-	case "g":
-		callGoogle(q)
-	case "w":
-		if (os.Getenv("TERM_PROGRAM") != "iTerm.app") {
-			fmt.Println("this only works in iTerm 3")
-			os.Exit(2)
+		q := url.QueryEscape(strings.Join(os.Args[2:], " "))
+
+		switch (os.Args[1]) {
+		case "g":
+			callGoogle(q)
+		case "w":
+			if (os.Getenv("TERM_PROGRAM") != "iTerm.app") {
+				fmt.Println("this only works in iTerm 3")
+				os.Exit(2)
+			}
+			callWRA(q)
 		}
-		callWRA(q)
 	}
+
+	fmt.Println(`
+		https://github.com/jwdeitch/search-cli
+
+
+		Supported search providers:
+		google (g):
+		  -y=[int]		limit search to N years back
+		  -n=[int]		Return N results (max 10)
+
+		Wolfram Alpha (w)
+
+
+		Example usage:
+		s w time in israel
+		s g cat day care nyc -n=5 -y=1 (limit search results to 1 year back, and only return 5 results)
+
+		`)
 }
 
 func parseFlags(q string) string {
