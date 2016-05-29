@@ -4,6 +4,10 @@
 
 ![main](http://rsa.rtc.fm/nzoa2.jpg)
 
+##### cmd + click on links to open
+
+---
+
 download the binary:
 ``` https://github.com/jwdeitch/search-cli/raw/master/s ```
 
