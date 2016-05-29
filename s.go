@@ -52,7 +52,7 @@ func main() {
 		Supported search providers:
 		google (g):
 		  -y=[int]		limit search to N years back
-		  -n=[int]		Return N results (max 10)
+		  -n=[int]		Return N results (max 9)
 
 		Wolfram Alpha (w)
 
@@ -72,7 +72,7 @@ func parseFlags(q string) string {
 		num := q[numPosition + 5:numPosition + 7]
 		num = strings.Replace(num, " ", "", 1)
 		numInt, _ := strconv.Atoi(num)
-		if numInt > 10 {
+		if numInt > 9 {
 			numInt = 10
 		}
 
