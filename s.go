@@ -17,7 +17,7 @@ import (
 
 var WRAUrl string = "https://2ylflv45i7.execute-api.us-west-2.amazonaws.com/prod/WolframalphaQuery?input="
 
-var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB20e2VDjrUebicIJkA4MFH4WO4b8cEzQY&cx=013676722247143124300:dazj-lelyfy&num=3"
+var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB20e2VDjrUebicIJkA4MFH4WO4b8cEzQY&cx=013676722247143124300:dazj-lelyfy"
 
 type GoogleResponse struct {
 	Items []struct {
@@ -43,19 +43,41 @@ func main() {
 	}
 }
 
-func parseFlags(q string) {
-	if strings.Contains(q,"-y%3D") {
-		yearPosition := strings.Index(q,"-y%3D")
-		year := q[yearPosition+5:yearPosition+6]
-		stringToRemove := q[yearPosition:yearPosition+6]
-		q = strings.Replace(q,stringToRemove,"",1)
+func parseFlags(q string) string {
+	q = q + " "
+
+	// number of results
+	if strings.Contains(q, "-n%3D") {
+		numPosition := strings.Index(q, "-n%3D")
+		num := q[numPosition + 5:numPosition + 7]
+		num = strings.Replace(num, " ", "", 1)
+		numInt, _ := strconv.Atoi(num)
+		if numInt > 10 {
+			numInt = 10
+		}
+
+		stringToRemove := q[numPosition:numPosition + 7]
+		q = strings.Replace(q, stringToRemove, "", 1)
+		q = q + "&num=" + strconv.Itoa(numInt)
+	} else {
+		q = q + "&num=3"
+	}
+
+	// year limit
+	if strings.Contains(q, "-y%3D") {
+		yearPosition := strings.Index(q, "-y%3D")
+		year := q[yearPosition + 5:yearPosition + 6]
+		stringToRemove := q[yearPosition:yearPosition + 6]
+		q = strings.Replace(q, stringToRemove, "", 1)
 		q = q + "&dateRestrict=y[" + year + "]"
 		fmt.Println(q)
 	}
+
+	return q
 }
 
 func callGoogle(q string) {
-	parseFlags(q)
+	q = parseFlags(q)
 	resp, err := http.Get(googleUrl + "&q=" + q)
 	defer resp.Body.Close()
 	Check(err)
