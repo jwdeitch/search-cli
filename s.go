@@ -43,9 +43,9 @@ func main() {
 			}
 			callWRA(q)
 		}
-	}
+	} else {
 
-	fmt.Println(`
+		fmt.Println(`
 		https://github.com/jwdeitch/search-cli
 
 
@@ -62,11 +62,10 @@ func main() {
 		s g cat day care nyc -n=5 -y=1 (limit search results to 1 year back, and only return 5 results)
 
 		`)
+	}
 }
 
 func parseFlags(q string) string {
-	q = q + " "
-
 	// number of results
 	if strings.Contains(q, "-n%3D") {
 		numPosition := strings.Index(q, "-n%3D")
@@ -91,7 +90,6 @@ func parseFlags(q string) string {
 		stringToRemove := q[yearPosition:yearPosition + 6]
 		q = strings.Replace(q, stringToRemove, "", 1)
 		q = q + "&dateRestrict=y[" + year + "]"
-		fmt.Println(q)
 	}
 
 	return q
@@ -100,6 +98,7 @@ func parseFlags(q string) string {
 func callGoogle(q string) {
 	q = parseFlags(q)
 	resp, err := http.Get(googleUrl + "&q=" + q)
+	fmt.Println(googleUrl + "&q=" + q)
 	defer resp.Body.Close()
 	Check(err)
 	response, _ := ioutil.ReadAll(resp.Body)
