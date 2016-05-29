@@ -29,22 +29,30 @@ type GoogleResponse struct {
 
 func main() {
 
-	if (os.Getenv("TERM_PROGRAM") != "iTerm.app") {
-		fmt.Println("this only works in iTerm")
-		os.Exit(2)
-	}
-
 	q := url.QueryEscape(strings.Join(os.Args[2:], " "))
 
 	switch (os.Args[1]) {
 	case "g":
 		callGoogle(q)
 	case "w":
+		if (os.Getenv("TERM_PROGRAM") != "iTerm.app") {
+			fmt.Println("this only works in iTerm 3")
+			os.Exit(2)
+		}
 		callWRA(q)
 	}
 }
 
+func parseFlags(q string) {
+	if strings.Contains(q,"-y%3D") {
+		yearPosition := strings.Index(q,"-y%3D")
+		year := q[yearPosition+5:yearPosition+6]
+		q = q + "&dateRestrict=" + year
+	}
+}
+
 func callGoogle(q string) {
+	parseFlags(q)
 	resp, err := http.Get(googleUrl + "&q=" + q)
 	defer resp.Body.Close()
 	Check(err)
