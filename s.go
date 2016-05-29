@@ -52,25 +52,38 @@ func main() {
 		Supported search providers:
 		google (g):
 		  -y=[int]		limit search to N years back
-		  -n=[int]		Return N results (max 9)
+		  -n=[int]		Return N results (max 10)
 
 		Wolfram Alpha (w)
 
 
 		Example usage:
-		s w time in israel
-		s g cat day care nyc -n=5 -y=1 (limit search results to 1 year back, and only return 5 results)
+		s w Time in St. Petersburg
+
+		s g cat day care nyc -n=5 -y=1
+		(limit search to 1 year back, return 5 results)
 
 		`)
 	}
 }
 
+// Horrible way to handle flags, but the only way I can think of is to search the string,
+// and do some hideous string manipulation to find the input values.
 func parseFlags(q string) string {
 	// number of results
 	if strings.Contains(q, "-n%3D") {
+		q = q + " "
 		numPosition := strings.Index(q, "-n%3D")
-		num := q[numPosition + 5:numPosition + 7]
-		num = strings.Replace(num, " ", "", 1)
+		num := string(q[numPosition + 5 : numPosition + 7])
+
+		if (num[len(num) - 1:]) == "+" {
+			num = string(q[numPosition + 5 : numPosition + 6])
+		}
+
+		if ((num[len(num) - 1:]) == " ") {
+			num = string(q[numPosition + 5 : numPosition + 6])
+		}
+
 		numInt, _ := strconv.Atoi(num)
 		if numInt > 9 {
 			numInt = 10
@@ -79,6 +92,7 @@ func parseFlags(q string) string {
 		stringToRemove := q[numPosition:numPosition + 7]
 		q = strings.Replace(q, stringToRemove, "", 1)
 		q = q + "&num=" + strconv.Itoa(numInt)
+		q = strings.Replace(q, " ", "", 1)
 	} else {
 		q = q + "&num=3"
 	}
@@ -98,7 +112,6 @@ func parseFlags(q string) string {
 func callGoogle(q string) {
 	q = parseFlags(q)
 	resp, err := http.Get(googleUrl + "&q=" + q)
-	fmt.Println(googleUrl + "&q=" + q)
 	defer resp.Body.Close()
 	Check(err)
 	response, _ := ioutil.ReadAll(resp.Body)
@@ -118,6 +131,7 @@ func callGoogle(q string) {
 
 }
 
+// Calls my AWS lambda function
 func callWRA(q string) {
 	resp, err := http.Get(WRAUrl + q)
 	Check(err)
