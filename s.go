@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
+	"github.com/fatih/color"
 	. "github.com/inturn/go-helpers"
 )
 
@@ -20,10 +21,10 @@ var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB20
 
 type GoogleResponse struct {
 	Items []struct {
-		      Link    string `json:"link"`
-		      Snippet string `json:"snippet"`
-		      Title   string `json:"title"`
-	      } `json:"items"`
+		Link    string `json:"link"`
+		Snippet string `json:"snippet"`
+		Title   string `json:"title"`
+	} `json:"items"`
 }
 
 func main() {
@@ -55,7 +56,11 @@ func callGoogle(q string) {
 
 	//fmt.Println(responseItems)
 	for _, responseItem := range responseItems.Items {
-		fmt.Println(responseItem.Title)
+		fmt.Println()
+		color.Cyan(responseItem.Title)
+		fmt.Println(responseItem.Snippet)
+		color.Green(responseItem.Link)
+		fmt.Println()
 	}
 
 }
