@@ -20,7 +20,7 @@
 ```
 ---
 
-download the binary:
-``` https://github.com/jwdeitch/search-cli/raw/master/s ```
+### Install 
+(download the binary, give executable permission, and move to `/usr/local/bin`)
 
-and move to ```/usr/local/bin/```
+``` curl https://raw.githubusercontent.com/jwdeitch/search-cli/master/s > s && chmod +x s && mv s /usr/local/bin ```
