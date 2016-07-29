@@ -24,3 +24,9 @@
 (download the binary, give executable permission, and move to `/usr/local/bin`)
 
 ``` curl https://raw.githubusercontent.com/jwdeitch/search-cli/master/s > s && chmod +x s && mv s /usr/local/bin ```
+
+---
+
+License CC Attribution 3.0
+
+https://creativecommons.org/licenses/by/3.0/deed.en_US
