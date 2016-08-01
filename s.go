@@ -17,7 +17,7 @@ import (
 
 var WRAUrl string = "https://2ylflv45i7.execute-api.us-west-2.amazonaws.com/prod/WolframalphaQuery?input="
 
-var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB20e2VDjrUebicIJkA4MFH4WO4b8cEzQY&cx=013676722247143124300:dazj-lelyfy"
+var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=<YOURgoogleAPIkey>&cx=013676722247143124300:dazj-lelyfy"
 
 type GoogleResponse struct {
 	Items []struct {
