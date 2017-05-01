@@ -10,25 +10,18 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"strconv"
-
 	"github.com/fatih/color"
-	. "github.com/inturn/go-helpers"
 )
 
-var WRAUrl string = "https://2ylflv45i7.execute-api.us-west-2.amazonaws.com/prod/WolframalphaQuery?input="
+var lambdaUrl string = "https://2ylflv45i7.execute-api.us-west-2.amazonaws.com/prod/WolframalphaQuery?input="
 
-var googleUrl string = "https://www.googleapis.com/customsearch/v1?key=<YOURgoogleAPIkey>&cx=013676722247143124300:dazj-lelyfy"
-
-type GoogleResponse struct {
-	Items []struct {
-		Link    string `json:"link"`
-		Snippet string `json:"snippet"`
-		Title   string `json:"title"`
-	} `json:"items"`
+type GoogleResponse[] struct {
+	Link    string `json:"link"`
+	Snippet string `json:"snippet"`
+	Title   string `json:"title"`
 }
 
 func main() {
-
 	if len(os.Args) > 2 {
 
 		q := url.QueryEscape(strings.Join(os.Args[2:], " "))
@@ -71,17 +64,18 @@ func main() {
 // and do some hideous string manipulation to find the input values.
 func parseFlags(q string) string {
 	// number of results
-	if strings.Contains(q, "-n%3D") {
+	if strings.Contains(q, "-n+") {
 		q = q + " "
-		numPosition := strings.Index(q, "-n%3D")
-		num := string(q[numPosition + 5 : numPosition + 7])
+		numPosition := strings.Index(q, "-n+")
+		num := string(q[numPosition + 3 : numPosition + 5])
 
+		var stringToRemove string
 		if (num[len(num) - 1:]) == "+" {
-			num = string(q[numPosition + 5 : numPosition + 6])
-		}
-
-		if ((num[len(num) - 1:]) == " ") {
-			num = string(q[numPosition + 5 : numPosition + 6])
+			num = string(q[numPosition + 3 : numPosition + 4])
+			stringToRemove = q[numPosition:numPosition + 5]
+		} else {
+			num = "10"
+			stringToRemove = q[numPosition:numPosition + 6]
 		}
 
 		numInt, _ := strconv.Atoi(num)
@@ -89,7 +83,6 @@ func parseFlags(q string) string {
 			numInt = 10
 		}
 
-		stringToRemove := q[numPosition:numPosition + 7]
 		q = strings.Replace(q, stringToRemove, "", 1)
 		q = q + "&num=" + strconv.Itoa(numInt)
 		q = strings.Replace(q, " ", "", 1)
@@ -98,10 +91,19 @@ func parseFlags(q string) string {
 	}
 
 	// year limit
-	if strings.Contains(q, "-y%3D") {
-		yearPosition := strings.Index(q, "-y%3D")
-		year := q[yearPosition + 5:yearPosition + 6]
-		stringToRemove := q[yearPosition:yearPosition + 6]
+	if strings.Contains(q, "-y+") {
+		yearPosition := strings.Index(q, "-y+")
+		year := q[yearPosition + 3:yearPosition + 5]
+		var stringToRemove string
+
+		if (year[len(year) - 1:]) == "+" {
+			year = string(q[yearPosition + 3 : yearPosition + 4])
+			stringToRemove = q[yearPosition:yearPosition + 5]
+		} else {
+			year = "10"
+			stringToRemove = q[yearPosition:yearPosition + 6]
+		}
+
 		q = strings.Replace(q, stringToRemove, "", 1)
 		q = q + "&dateRestrict=y[" + year + "]"
 	}
@@ -111,7 +113,7 @@ func parseFlags(q string) string {
 
 func callGoogle(q string) {
 	q = parseFlags(q)
-	resp, err := http.Get(googleUrl + "&q=" + q)
+	resp, err := http.Get(lambdaUrl + q + "&s=g")
 	defer resp.Body.Close()
 	Check(err)
 	response, _ := ioutil.ReadAll(resp.Body)
@@ -121,7 +123,7 @@ func callGoogle(q string) {
 	json.Unmarshal([]byte(response), &responseItems)
 
 	//fmt.Println(responseItems)
-	for _, responseItem := range responseItems.Items {
+	for _, responseItem := range responseItems {
 		fmt.Println()
 		color.Cyan(responseItem.Title)
 		fmt.Println(responseItem.Snippet)
@@ -133,7 +135,7 @@ func callGoogle(q string) {
 
 // Calls my AWS lambda function
 func callWRA(q string) {
-	resp, err := http.Get(WRAUrl + q)
+	resp, err := http.Get(lambdaUrl + q + "&s=wra")
 	Check(err)
 	defer resp.Body.Close()
 
@@ -166,4 +168,11 @@ func printImg(path string) {
 	b64FileContents := base64.StdEncoding.EncodeToString(body)
 	fmt.Printf("\033]1337;File=name=%s;inline=1:%s\a\n", b64FileName, b64FileContents)
 	defer os.Remove(path)
+}
+
+func Check(err error) {
+	if (err != nil) {
+		fmt.Errorf("Something went wrong!: %s", err.Error())
+		os.Exit(2);
+	}
 }
