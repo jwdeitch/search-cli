@@ -23,7 +23,10 @@
 ### Install 
 (download the binary, give executable permission, and move to `/usr/local/bin`)
 
-``` curl https://raw.githubusercontent.com/jwdeitch/search-cli/master/s > s && chmod +x s && mv s /usr/local/bin ```
+# osx:
+
+``` curl https://raw.githubusercontent.com/jwdeitch/search-cli/master/dist/osx/s > s && chmod +x s && mv s /usr/local/bin ```
+
 
 ---
 
