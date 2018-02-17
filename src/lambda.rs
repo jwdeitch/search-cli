@@ -47,5 +47,5 @@ pub fn inline_image<W>(buf: &mut W, name: &str) -> Result<()>
 }
 
 pub fn retrieve_image(path: String) -> String {
-    return encode(&get_http(&path).expect("wefwef"));
+    return encode(&get_http(&path).expect("failed retrieving image from WRA API"));
 }
