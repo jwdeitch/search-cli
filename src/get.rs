@@ -6,7 +6,7 @@ pub fn get_http(path: &str) -> Result<Vec<u8>> {
     match reqwest::Url::parse(path) {
         Ok(url) => {
             reqwest::get(url)
-                .map_err(|_e| Error::new(ErrorKind::NotConnected, "reqwest"))
+                .map_err(|_e| Error::new(ErrorKind::NotConnected, "map error"))
                 .and_then(|mut r| r.read_to_end(&mut contents))?;
         }
         Err(e) => {
