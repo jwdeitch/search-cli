@@ -1,9 +1,11 @@
 extern crate reqwest;
 extern crate serde_json;
 extern crate base64;
+extern crate url;
 
 use std::io::{Stdout, stdout};
 use std::env;
+use url::form_urlencoded::byte_serialize;
 
 mod lambda;
 mod get;
@@ -19,11 +21,9 @@ fn main() {
     args.remove(0);
 
     let mut stdout: Stdout = stdout();
-    let result_url = wra_endpoint(args.join(""));
-    match lambda::inline_image(&mut stdout, &result_url) {
-        Ok(()) => print!("ok"),
-        Err(_) => print!("err"),
-    }
+    let urlencoded: String = byte_serialize(&args.join("").as_bytes()).collect();
+
+    lambda::inline_image(&mut stdout, &wra_endpoint(&urlencoded));
 }
 
 fn wra_endpoint(query: &str) -> String {
